@@ -1,4 +1,4 @@
-use macors_de_asobo::FromNum;
+use macors_de_asobu::FromNum;
 
 #[derive(FromNum,Debug)]
 pub enum Foods {
