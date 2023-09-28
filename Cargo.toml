@@ -1,0 +1,16 @@
+[package]
+name = "macors-de-asobo"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+paste = "*"
+seq-macro = "*"
+proc-macro2 = "*"
+syn = "*"
+quote = "1.0.33"
+
+[lib]
+proc-macro = true
