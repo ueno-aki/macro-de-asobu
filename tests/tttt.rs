@@ -5,15 +5,15 @@ pub enum Foods {
     CurryRice,
     Sushi,
     FriedChicken,
-    HamburgSteak = 13,
+    HamburgSteak = 0o12,
     FrenchFries,
     Ramen,
     Yakiniku,
-    RiceOmlet,
+    RiceOmlet = 0xfe,
     Pizza,
     FriedRice
 }
 #[test]
 fn main() {
-    println!("{:?}",Foods::from_usize(16));
+    println!("{:?}",Foods::from_usize(13));
 }

@@ -14,7 +14,7 @@ pub fn derive_builder(input:TokenStream) -> TokenStream {
             let mut count = 0;
             for var in data.variants.iter() {
                 if let Some((_,expr)) = var.discriminant.clone() {
-                    count = expr.into_token_stream().to_string().parse::<usize>().unwrap();
+                    count = parse_with_prefix(&expr.into_token_stream().to_string());
                 };
                 fns += &format!{
                     "{} => Self::{},",
@@ -41,4 +41,16 @@ pub fn derive_builder(input:TokenStream) -> TokenStream {
         }
         _ => unimplemented!()
     }
+}
+
+fn parse_with_prefix(s: &str) -> usize {
+    let radix = match s {
+        s if s.starts_with("0b") => 2,
+        s if s.starts_with("0o") => 8,
+        s if s.starts_with("0x") => 16,
+        _ => {
+            return usize::from_str_radix(s, 10).unwrap();
+        },
+    };
+    usize::from_str_radix(&s[2..], radix).unwrap()
 }
