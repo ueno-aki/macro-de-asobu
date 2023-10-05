@@ -10,8 +10,8 @@ pub fn from_num(attrs: TokenStream, item: TokenStream) -> TokenStream {
         TokenTree::Ident(_) => true,
         _ => false
     }).collect();
-    let item_c = item.clone();
-    let input = parse_macro_input!(item_c as DeriveInput);
+    let mut item_c = item.clone();
+    let input = parse_macro_input!(item as DeriveInput);
     match input.data {
         Data::Enum(data) => {
             let mut arms = format!("");
@@ -28,7 +28,8 @@ pub fn from_num(attrs: TokenStream, item: TokenStream) -> TokenStream {
                 count += 1;
             }
             let code = num_traits(&input.ident,&arms,&attrs);
-            (item.to_string() + &code).parse().unwrap()
+            item_c.extend(code.parse::<TokenStream>().unwrap());
+            item_c
         }
         _ => unimplemented!()
     }
