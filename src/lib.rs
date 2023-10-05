@@ -1,41 +1,18 @@
-use proc_macro::TokenStream;
-use quote::{ToTokens,quote};
+use proc_macro::{TokenStream, TokenTree};
+use proc_macro2::Ident;
+use quote::ToTokens;
 use syn::{parse_macro_input, DeriveInput, Data};
 extern crate proc_macro;
 
-macro_rules! num_traits {
-    ($name:expr, $arms:expr, [ $($num:tt),* ]) => {
-        {
-            let mut code = String::new();
-            $(code += &num_trait!($name,$arms,$num);)*
-            code
-        }
-    };
-}
-macro_rules! num_trait {
-    ($name:expr, $arms:expr, $num:tt) => {
-        format! {
-            r#"
-                impl From<{2}> for {0} {{
-                    fn from(value:{2}) -> Self {{
-                        match value {{
-                            {1}
-                            _ => panic!("Failed convertion from {{}}",value)
-                        }}
-                    }}
-                }}
-            "#,
-            $name,
-            $arms,
-            quote!($num),
-        }
-    };
-}
-#[proc_macro_derive(FromNum)]
-pub fn derive_builder(input:TokenStream) -> TokenStream {
-    let inp = parse_macro_input!(input as DeriveInput);
-    let name = inp.ident.to_string();
-    match inp.data {
+#[proc_macro_attribute]
+pub fn from_num(attrs: TokenStream, item: TokenStream) -> TokenStream {
+    let attrs:Vec<_> = attrs.into_iter().filter(|v|match v {
+        TokenTree::Ident(_) => true,
+        _ => false
+    }).collect();
+    let item_c = item.clone();
+    let input = parse_macro_input!(item_c as DeriveInput);
+    match input.data {
         Data::Enum(data) => {
             let mut arms = format!("");
             let mut count = 0;
@@ -50,11 +27,31 @@ pub fn derive_builder(input:TokenStream) -> TokenStream {
                 };
                 count += 1;
             }
-            let code = num_traits!(name,arms,[i8,i16,i32,i64,isize,u8,u16,u32,u64,usize]);
-            code.parse().unwrap()
+            let code = num_traits(&input.ident,&arms,&attrs);
+            (item.to_string() + &code).parse().unwrap()
         }
         _ => unimplemented!()
     }
+}
+
+fn num_traits(name:&Ident,arms:&str,nums:&[TokenTree]) -> String{
+    let mut code = String::new();
+    for token in nums.iter() {
+        code += &format! {
+            r#"impl From<{2}> for {0} {{
+                fn from(value:{2}) -> Self {{
+                    match value {{
+                        {1}
+                        _ => panic!("Failed convertion from {{}}",value)
+                    }}
+                }}
+            }}"#,
+            name.to_string(),
+            arms,
+            token.to_string(),
+        };
+    }
+    code
 }
 
 fn parse_with_prefix(s: &str) -> usize {

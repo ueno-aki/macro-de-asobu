@@ -1,6 +1,7 @@
-use macors_de_asobu::FromNum;
+use macors_de_asobu::from_num;
 
-#[derive(FromNum,Debug)]
+#[derive(Debug)]
+#[from_num(i32,usize)]
 pub enum Foods {
     CurryRice,
     Sushi,
