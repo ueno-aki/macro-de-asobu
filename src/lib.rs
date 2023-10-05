@@ -41,13 +41,10 @@ fn num_traits(name:&Ident,arms:&str,nums:&[TokenTree]) -> String{
         code += &format! {
             r#"impl From<{2}> for {0} {{
                 fn from(value:{2}) -> Self {{
-                    match value {{
-                        {1}
-                        _ => panic!("Failed convertion from {{}}",value)
-                    }}
+                    match value {{{1}_ => panic!("Failed convertion from {{}}",value)}}
                 }}
             }}"#,
-            name.to_string(),
+            name,
             arms,
             token.to_string(),
         };
