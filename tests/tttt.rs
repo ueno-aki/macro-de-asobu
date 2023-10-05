@@ -13,7 +13,8 @@ pub enum Foods {
     Pizza,
     FriedRice
 }
+
 #[test]
 fn main() {
-    println!("{:?}",Foods::from_usize(13));
+    println!("{:?}",Foods::from(0o16));
 }

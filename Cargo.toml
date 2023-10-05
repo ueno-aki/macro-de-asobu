@@ -11,6 +11,7 @@ seq-macro = "*"
 proc-macro2 = "*"
 syn = "*"
 quote = "1.0.33"
+anyhow = "*"
 
 [lib]
 proc-macro = true
